@@ -10,6 +10,7 @@ public class FileSearcher {
     }
 
 
+
     private int scoreFile(File file){
         String[] readfile = readFile(file);
 
