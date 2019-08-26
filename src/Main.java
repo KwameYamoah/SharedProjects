@@ -4,6 +4,7 @@ public class Main {
         System.out.println("Hello World");
         System.out.println("Second line");
 
+
 //        1. Read pdf files
 //        2. Convert pdf to text
 //        3. Split text content into individual words
@@ -13,6 +14,6 @@ public class Main {
 //        6. Get TF IDF (formula)
 //        7. UI to apply search and print out results
 
-
+        System.out.println("End of program.");
     }
 }
