@@ -1,8 +1,10 @@
 package Program;
 
+import HelperClasses.FileSearcher;
 import User_Interface.UI;
 
 import javax.swing.*;
+import java.io.File;
 
 public class Main {
 
@@ -15,13 +17,39 @@ public class Main {
 //       5. Get word term frequency
 //       6. Get TF IDF (formula)
 //       7. UI to apply search and print out results
+//          7. Table of results: Contains link - When clicked, opens directory of where file is at.
 
-        JFrame frame = new JFrame();
-        frame.add(new UI());
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+        // UI
+//        JFrame frame = new JFrame();
+//        frame.add(new UI());
+//        frame.pack();
+//        frame.setLocationRelativeTo(null);
+//        frame.setVisible(true);
+//        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+        // Finds list of files in directory
+        String folderName = "Lectures";
+        File folder = new File(System.getProperty("user.dir")+"\\"+folderName);
+        String dir = System.getProperty("user.dir")+"\\"+folderName;
+        File[] listOfFiles = folder.listFiles();
+
+
+        FileSearcher fileSearcher = new FileSearcher(dir);
+
+
+        for(int i=0;i<listOfFiles.length;i++){
+            if (listOfFiles[i].isFile()) {
+                System.out.println("File " + listOfFiles[i].getName());
+            } else if (listOfFiles[i].isDirectory()) {
+                System.out.println("Directory " + listOfFiles[i].getName());
+            }
+        }
+
+        //Need to use a DFS search to traverse directories and retrieve list of all relevant files to be read
+
+
+
 
 
     }
