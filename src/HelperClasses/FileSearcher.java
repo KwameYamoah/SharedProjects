@@ -11,6 +11,14 @@ public class FileSearcher {
 
 
     private int scoreFile(File file){
+        String[] readfile = readFile(file);
+
+
         return 0;
+    }
+
+    private String[] readFile(File file) {
+
+        return null;
     }
 }
