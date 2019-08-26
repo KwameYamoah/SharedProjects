@@ -20,13 +20,6 @@ public class Main {
 //          7. Table of results: Contains link - When clicked, opens directory of where file is at.
 
 
-        // UI
-//        JFrame frame = new JFrame();
-//        frame.add(new UI());
-//        frame.pack();
-//        frame.setLocationRelativeTo(null);
-//        frame.setVisible(true);
-//        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         // Finds list of files in directory
         String folderName = "Lectures";
