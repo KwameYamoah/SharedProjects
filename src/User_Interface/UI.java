@@ -1,60 +1,211 @@
 package User_Interface;
 
-import HelperClasses.FileSearcher;
+import HelperClasses.Command;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import static HelperClasses.Constants.*;
+
 public class UI extends JPanel {
-    private JTextField search_field;
+    private RoundedJTextField add_file; //rounded text-field to give it a modern feel
+    private JComboBox<String> file_list; //rounded text-field to give it a modern feel
+    private RoundedJTextField search_keyword; //rounded text-field to give it a modern feel
+
     public UI(){
-        FlowLayout layout = new FlowLayout();
-        layout.setVgap(0);
-        setLayout(layout);
+
+        //TODO status label
+        Color background_color = Color.BLACK;
+
+        //removes padding around components
+        FlowLayout no_padding_layout = new FlowLayout();
+        no_padding_layout.setVgap(0);
+        no_padding_layout.setHgap(0);
+        setLayout(no_padding_layout);
+
+        setBackground(background_color);
+
+        //title in program window and other labels
+        JLabel title = new JLabel("File Searcher");
+        title.setFont(new Font("Sans Serif", Font.PLAIN, 16));
+        title.setForeground(Color.WHITE);
+
+        JLabel file_path = new JLabel("Enter file path  ");
+        JLabel files_added = new JLabel("Files added ");
+        JLabel search_label = new JLabel("Search keyword ");
+
+        file_path.setForeground(Color.WHITE);
+        files_added.setForeground(Color.WHITE);
+        search_label.setForeground(Color.WHITE);
 
 
-        search_field = new JTextField(20);
+        // text fields
+        add_file = new RoundedJTextField("",20);
+        file_list = new JComboBox<>();
+        file_list.setBackground(Color.WHITE);
+        file_list.setPreferredSize(new Dimension(add_file.getPreferredSize().width,add_file.getPreferredSize().height));
+        search_keyword = new RoundedJTextField("",20);
+
+        //button and corresponding listeners
+        JButton add_button = new JButton("Add");
+        add_button.addActionListener(new ButtonHandler(this,Command.ADD));
+        JButton open_button = new JButton("Open");
+        open_button.addActionListener(new ButtonHandler(this,Command.OPEN));
+        JButton remove_button = new JButton("Remove");
+        remove_button.addActionListener(new ButtonHandler(this,Command.REMOVE));
         JButton search_button = new JButton("Search");
+        search_button.addActionListener(new ButtonHandler(this,Command.SEARCH));
+        JButton reset_button = new JButton("Reset");
+        reset_button.setAlignmentX(LEFT_ALIGNMENT);
+        reset_button.addActionListener(new ButtonHandler(this,Command.RESET));
+        JButton exit_button = new JButton("Exit");
+        exit_button.addActionListener(new ButtonHandler(this,Command.EXIT));
 
-        search_button.addActionListener(new ButtonHandler(this,1));
 
+        //north panel(container/section) - contains title
         JPanel north = new JPanel();
-        JPanel south = new JPanel();
+        north.add(title);
+        north.setBackground(background_color);
+        north.setPreferredSize(new Dimension(UI_WIDTH,NORTH_PANEL_HEIGHT));
 
+
+        //adding north section to frame/panel
         add(north,BorderLayout.NORTH);
-        north.add(search_field);
-        north.add(search_button);
-        north.setPreferredSize(new Dimension(400,40));
 
-        south.setPreferredSize(new Dimension(400,360));
+        //center panel(container/section)- contains text-fields and corresponding button
+        JPanel center = new JPanel();
+        JPanel center_left = new JPanel();
+        JPanel center_right = new JPanel();
+
+
+        //setting different padding for center, center_left, and center_right
+        FlowLayout center_right_layout = new FlowLayout(FlowLayout.LEFT);
+        center_right_layout.setVgap(10);
+        center_right_layout.setHgap(15);
+
+        FlowLayout center_left_layout = new FlowLayout(FlowLayout.LEFT);
+        center_left_layout.setVgap(17);
+        center_left_layout.setHgap(15);
+
+
+        center.setLayout(no_padding_layout);
+        center_left.setLayout(center_left_layout);
+        center_right.setLayout(center_right_layout);
+
+        //setting sizes of center, center_left, and center_right
+        center.setPreferredSize(new Dimension(UI_WIDTH,CENTER_PANEL_HEIGHT));
+        center_left.setPreferredSize(new Dimension(110,CENTER_PANEL_HEIGHT));
+        center_right.setPreferredSize(new Dimension(400,CENTER_PANEL_HEIGHT));
+
+        //adding first row of components
+        center_left.add(file_path);
+        center_right.add(add_file);
+        center_right.add(add_button);
+        center_right.add(open_button);
+
+        //adding second row of components
+        center_left.add(files_added);
+        center_right.add(file_list);
+        center_right.add(remove_button);
+
+        //adding third row of components
+        center_left.add(search_label);
+        center_right.add(search_keyword);
+        center_right.add(search_button);
+
+        //setting background for center section
+        center_left.setBackground(background_color);
+        center_right.setBackground(background_color);
+        center.setBackground(background_color);
+
+        //adding center_left and center_right to center  and center section to UI Panel
+        center.add(center_left,BorderLayout.WEST);
+        center.add(center_right,BorderLayout.EAST);
+        add(center,BorderLayout.CENTER);
+
+        //south panel(container/section)- will contain footer elements (i.e exit and clear button)
+        JPanel south = new JPanel();
+        south.setBackground(background_color);
+        south.setPreferredSize(new Dimension(UI_WIDTH,SOUTH_PANEL_HEIGHT));
+
+        //west of south section - setting padding and adding component(reset button)
+        JPanel south_left = new JPanel();
+        south_left.add(reset_button);
+        south_left.setPreferredSize(new Dimension(UI_WIDTH/2,SOUTH_PANEL_HEIGHT));
+        south_left.setBackground(background_color);
+        south_left.setLayout(new FlowLayout(FlowLayout.LEFT));
+        south_left.setBorder(new EmptyBorder(0,30,0,0));
+
+
+        //east of south section - setting padding and adding components(exit and search button)
+        JPanel south_right = new JPanel();
+        south_right.setPreferredSize(new Dimension(UI_WIDTH/2,SOUTH_PANEL_HEIGHT));
+        south_right.add(exit_button);
+        south_right.add(search_button);
+        south_right.setBackground(background_color);
+        south_right.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        south_right.setBorder(new EmptyBorder(0,0,0,23));
+
+
+        //adding south_left and south_right to south  and south section to UI Panel
+        south.add(south_left,BorderLayout.WEST);
+        south.add(south_right,BorderLayout.EAST);
+        south.setLayout(no_padding_layout);
         add(south,BorderLayout.SOUTH);
-        south.setBorder(BorderFactory.createLineBorder(Color.black));
+        //south.setBorder(BorderFactory.createLineBorder(Color.black));
     }
 
 
 
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension(400,400);
+        return new Dimension(UI_WIDTH,UI_HEIGHT);
     }
 
 
-    class ButtonHandler implements ActionListener {
+    class ButtonHandler implements ActionListener {     //handles what buttons do based on corresponding action
         UI panel;
-        int action;
-        ButtonHandler(UI panel, int action) {
+        Command command;
+        ButtonHandler(UI panel, Command command) {
             this.panel = panel;
-            this.action = action;
+            this.command = command;
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (action == 1) {
-                System.out.println(panel.search_field.getText());
+            switch (command){
+                case EXIT:
+                    System.exit(WindowConstants.DO_NOTHING_ON_CLOSE);
+                    break;
+                case ADD:
+                    //TODO add file to list and shows visually on JComboBox
+                    break;
+                case OPEN:
+                    //TODO FileChooser
+                    break;
+                case RESET:
+                    panel.add_file.setText("");
+                    panel.file_list.removeAllItems();
+                    panel.search_keyword.setText("");
+                    break;
+                case REMOVE:
+                    //TODO removes selected file and updates JComboBox
+                    break;
+                case SEARCH:
+                    //Calls static search method
+                    break;
+
 
             }
+
+
         }
     }
+
+
 }
+
+
