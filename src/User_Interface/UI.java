@@ -7,6 +7,8 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.ArrayList;
 
 import static HelperClasses.Constants.*;
 
@@ -14,10 +16,21 @@ public class UI extends JPanel {
     private RoundedJTextField add_file; //rounded text-field to give it a modern feel
     private JComboBox<String> file_list; //rounded text-field to give it a modern feel
     private RoundedJTextField search_keyword; //rounded text-field to give it a modern feel
+    private JLabel status_label;
+    private JFileChooser fileChooser = null;
+    private ArrayList<File> files_to_search = new ArrayList<>();
+
 
     public UI(){
+        LookAndFeel previousLF = UIManager.getLookAndFeel();
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            fileChooser = new JFileChooser();
+            UIManager.setLookAndFeel(previousLF);
+        } catch (IllegalAccessException | UnsupportedLookAndFeelException | InstantiationException | ClassNotFoundException ignored) {
+        }
 
-        //TODO status label
+        //TODO Mouse Listener
         Color background_color = Color.BLACK;
 
         //removes padding around components
@@ -36,6 +49,9 @@ public class UI extends JPanel {
         JLabel file_path = new JLabel("Enter file path  ");
         JLabel files_added = new JLabel("Files added ");
         JLabel search_label = new JLabel("Search keyword ");
+        status_label = new JLabel("Input details");
+        status_label.setFont(new Font("Sans Serif", Font.PLAIN, 14));
+        status_label.setForeground(Color.GREEN);
 
         file_path.setForeground(Color.WHITE);
         files_added.setForeground(Color.WHITE);
@@ -52,15 +68,20 @@ public class UI extends JPanel {
         //button and corresponding listeners
         JButton add_button = new JButton("Add");
         add_button.addActionListener(new ButtonHandler(this,Command.ADD));
+
         JButton open_button = new JButton("Open");
         open_button.addActionListener(new ButtonHandler(this,Command.OPEN));
+
         JButton remove_button = new JButton("Remove");
         remove_button.addActionListener(new ButtonHandler(this,Command.REMOVE));
+
         JButton search_button = new JButton("Search");
         search_button.addActionListener(new ButtonHandler(this,Command.SEARCH));
+
         JButton reset_button = new JButton("Reset");
         reset_button.setAlignmentX(LEFT_ALIGNMENT);
         reset_button.addActionListener(new ButtonHandler(this,Command.RESET));
+
         JButton exit_button = new JButton("Exit");
         exit_button.addActionListener(new ButtonHandler(this,Command.EXIT));
 
@@ -134,15 +155,22 @@ public class UI extends JPanel {
         //west of south section - setting padding and adding component(reset button)
         JPanel south_left = new JPanel();
         south_left.add(reset_button);
-        south_left.setPreferredSize(new Dimension(UI_WIDTH/2,SOUTH_PANEL_HEIGHT));
+
+        south_left.setPreferredSize(new Dimension(UI_WIDTH / 3, SOUTH_PANEL_HEIGHT));
         south_left.setBackground(background_color);
         south_left.setLayout(new FlowLayout(FlowLayout.LEFT));
         south_left.setBorder(new EmptyBorder(0,30,0,0));
 
+        //center of south section - setting padding and adding components(status label)
+        JPanel south_center = new JPanel();
+        south_center.add(status_label);
+        south_center.setPreferredSize(new Dimension(UI_WIDTH / 3, SOUTH_PANEL_HEIGHT));
+        south_center.setBackground(background_color);
+        south_center.setLayout(new FlowLayout(FlowLayout.CENTER));
 
         //east of south section - setting padding and adding components(exit and search button)
         JPanel south_right = new JPanel();
-        south_right.setPreferredSize(new Dimension(UI_WIDTH/2,SOUTH_PANEL_HEIGHT));
+        south_right.setPreferredSize(new Dimension(UI_WIDTH / 3, SOUTH_PANEL_HEIGHT));
         south_right.add(exit_button);
         south_right.add(search_button);
         south_right.setBackground(background_color);
@@ -152,6 +180,7 @@ public class UI extends JPanel {
 
         //adding south_left and south_right to south  and south section to UI Panel
         south.add(south_left,BorderLayout.WEST);
+        south.add(south_center, BorderLayout.CENTER);
         south.add(south_right,BorderLayout.EAST);
         south.setLayout(no_padding_layout);
         add(south,BorderLayout.SOUTH);
@@ -181,21 +210,28 @@ public class UI extends JPanel {
                     System.exit(WindowConstants.DO_NOTHING_ON_CLOSE);
                     break;
                 case ADD:
-                    //TODO add file to list and shows visually on JComboBox
+                    if (!(add_file.getText().trim()).equals("")) {
+                        File file = new File(add_file.getText());
+                        files_to_search.add(file);
+                        file_list.addItem(file.getName());  //must also check if file path is legit
+                    }
                     break;
                 case OPEN:
-                    //TODO FileChooser
+                    int action = fileChooser.showOpenDialog(panel);
+                    if (action == JFileChooser.APPROVE_OPTION) {
+                        add_file.setText(fileChooser.getSelectedFile().toString());
+                    }
                     break;
                 case RESET:
-                    panel.add_file.setText("");
-                    panel.file_list.removeAllItems();
-                    panel.search_keyword.setText("");
+                    add_file.setText("");
+                    file_list.removeAllItems();
+                    search_keyword.setText("");
                     break;
                 case REMOVE:
                     //TODO removes selected file and updates JComboBox
                     break;
                 case SEARCH:
-                    //Calls static search method
+                    //TODO Calls static search method
                     break;
 
 
