@@ -1,6 +1,6 @@
 package Program;
 
-import HelperClasses.FileSearcher;
+import HelperClasses.SearchEngine;
 import User_Interface.UI;
 
 import javax.swing.*;
@@ -28,16 +28,11 @@ public class Main {
         File[] listOfFiles = folder.listFiles();
 
 
-        FileSearcher fileSearcher = new FileSearcher(dir);
+        SearchEngine fileSearcher = new SearchEngine(dir,"java");
 
 
-        for(int i=0;i<listOfFiles.length;i++){
-            if (listOfFiles[i].isFile()) {
-                System.out.println("File " + listOfFiles[i].getName());
-            } else if (listOfFiles[i].isDirectory()) {
-                System.out.println("Directory " + listOfFiles[i].getName());
-            }
-        }
+
+
 
         //Need to use a DFS search to traverse directories and retrieve list of all relevant files to be read
 
