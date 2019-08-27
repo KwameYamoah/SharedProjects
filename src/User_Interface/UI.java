@@ -7,8 +7,10 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import static HelperClasses.Constants.*;
 
@@ -18,20 +20,25 @@ public class UI extends JPanel {
     private RoundedJTextField search_keyword; //rounded text-field to give it a modern feel
     private JLabel status_label;
     private JFileChooser fileChooser = null;
-    private ArrayList<File> files_to_search = new ArrayList<>();
+    //TODO second UI - tomorrow
+    public JFrame frame;
+    private HashMap<String, File> files_to_search = new HashMap<>();
 
+    public UI(JFrame frame) {
+        this.frame = frame;
+        addMouseMotionListener(new MouseHandler());
 
-    public UI(){
         LookAndFeel previousLF = UIManager.getLookAndFeel();
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             fileChooser = new JFileChooser();
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
             UIManager.setLookAndFeel(previousLF);
         } catch (IllegalAccessException | UnsupportedLookAndFeelException | InstantiationException | ClassNotFoundException ignored) {
         }
 
-        //TODO Mouse Listener
-        Color background_color = Color.BLACK;
+
+        final Color background_color = Color.BLACK;
 
         //removes padding around components
         FlowLayout no_padding_layout = new FlowLayout();
@@ -49,6 +56,7 @@ public class UI extends JPanel {
         JLabel file_path = new JLabel("Enter file path  ");
         JLabel files_added = new JLabel("Files added ");
         JLabel search_label = new JLabel("Search keyword ");
+
         status_label = new JLabel("Input details");
         status_label.setFont(new Font("Sans Serif", Font.PLAIN, 14));
         status_label.setForeground(Color.GREEN);
@@ -79,12 +87,10 @@ public class UI extends JPanel {
         search_button.addActionListener(new ButtonHandler(this,Command.SEARCH));
 
         JButton reset_button = new JButton("Reset");
-        reset_button.setAlignmentX(LEFT_ALIGNMENT);
         reset_button.addActionListener(new ButtonHandler(this,Command.RESET));
 
         JButton exit_button = new JButton("Exit");
         exit_button.addActionListener(new ButtonHandler(this,Command.EXIT));
-
 
         //north panel(container/section) - contains title
         JPanel north = new JPanel();
@@ -212,8 +218,10 @@ public class UI extends JPanel {
                 case ADD:
                     if (!(add_file.getText().trim()).equals("")) {
                         File file = new File(add_file.getText());
-                        files_to_search.add(file);
+                        files_to_search.put(file.getName(), file);
                         file_list.addItem(file.getName());  //must also check if file path is legit
+                        System.out.println(files_to_search);
+                        // Pathways needs to be passed to file searcher
                     }
                     break;
                 case OPEN:
@@ -228,17 +236,37 @@ public class UI extends JPanel {
                     search_keyword.setText("");
                     break;
                 case REMOVE:
-                    //TODO removes selected file and updates JComboBox
+                    String file = (String) file_list.getSelectedItem();
+                    file_list.removeItem(file);
+                    files_to_search.remove(file);
                     break;
                 case SEARCH:
                     //TODO Calls static search method
                     break;
 
-
             }
+        }
+    }
 
+    class MouseHandler extends MouseAdapter {
+
+        private int posX, posY;
+
+        @Override
+        public void mouseMoved(MouseEvent e) {
+            posX = e.getX();
+            posY = e.getY();
 
         }
+
+        @Override
+        public void mouseDragged(MouseEvent e) {
+            Rectangle rectangle = frame.getBounds();
+            frame.setBounds(e.getXOnScreen() - posX, e.getYOnScreen() - posY, rectangle.width, rectangle.height);
+
+        }
+
+
     }
 
 

@@ -10,7 +10,7 @@ public class Main2 {
         // UI
         JFrame frame = new JFrame();
         frame.setTitle("File Searcher");    //even thought frame title bar is removed, the name of program would still show when you alt-tab
-        frame.add(new UI());                //adds panel to frame
+        frame.add(new UI(frame));                //adds panel to frame
         frame.setUndecorated(true);        //removes frame's title bar
         frame.pack();                       //fits size to components
         frame.setShape(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 20, 20)); //creates rounded edges for modern feel
