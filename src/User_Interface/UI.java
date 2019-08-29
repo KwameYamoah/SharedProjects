@@ -1,14 +1,17 @@
 package User_Interface;
 
 import HelperClasses.Command;
+import Program.Main2;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.RoundRectangle2D;
 import java.io.File;
 import java.util.HashMap;
 
@@ -25,10 +28,16 @@ public class UI extends JPanel {
     // Theme change maybe
     private JFrame frame;
     private HashMap<String, File> files_to_search = new HashMap<>();
+    private JTable result_table;
+    private DefaultTableModel dm;
+    private JPanel result_panel;
 
     public UI(JFrame frame) {
         this.frame = frame;
         addMouseMotionListener(new MouseHandler());
+
+        setPreferredSize(new Dimension(UI_WIDTH, UI_HEIGHT));
+        setBackground(Color.BLACK);
 
         LookAndFeel previousLF = UIManager.getLookAndFeel();
         try {
@@ -41,14 +50,34 @@ public class UI extends JPanel {
 
 
         final Color background_color = Color.BLACK;
-
         //removes padding around components
         FlowLayout no_padding_layout = new FlowLayout();
         no_padding_layout.setVgap(0);
         no_padding_layout.setHgap(0);
         setLayout(no_padding_layout);
 
-        setBackground(background_color);
+
+        JPanel body = new JPanel();
+        body.setBackground(Color.BLACK);
+        body.setPreferredSize(new Dimension(UI_WIDTH, UI_BODY_HEIGHT));
+        add(body, BorderLayout.NORTH);
+
+        JPanel spacing = new JPanel();
+        spacing.setBackground(Color.BLACK);
+        spacing.setPreferredSize(new Dimension(UI_WIDTH, 10));
+        add(spacing, BorderLayout.CENTER);
+
+        result_panel = new JPanel();
+        result_panel.setBackground(Color.BLACK);
+        result_panel.setPreferredSize(new Dimension(RESULT_PANEL_WIDTH, RESULT_PANEL_HEIGHT));
+        result_panel.setLayout(no_padding_layout);
+        add(result_panel, BorderLayout.SOUTH);
+
+
+        //Table for showing results
+
+        //result_panel.add(scrollPane);
+
 
         //title in program window and other labels
         JLabel title = new JLabel("File Searcher");
@@ -69,40 +98,40 @@ public class UI extends JPanel {
 
 
         // text fields
-        add_file = new RoundedJTextField("",20);
+        add_file = new RoundedJTextField("", 20);
         file_list = new JComboBox<>();
         file_list.setBackground(Color.WHITE);
-        file_list.setPreferredSize(new Dimension(add_file.getPreferredSize().width,add_file.getPreferredSize().height));
-        search_keyword = new RoundedJTextField("",20);
+        file_list.setPreferredSize(new Dimension(add_file.getPreferredSize().width, add_file.getPreferredSize().height));
+        search_keyword = new RoundedJTextField("", 20);
 
         //button and corresponding listeners
         JButton add_button = new JButton("Add");
-        add_button.addActionListener(new ButtonHandler(this,Command.ADD));
+        add_button.addActionListener(new ButtonHandler(this, Command.ADD));
 
         JButton open_button = new JButton("Open");
-        open_button.addActionListener(new ButtonHandler(this,Command.OPEN));
+        open_button.addActionListener(new ButtonHandler(this, Command.OPEN));
 
         JButton remove_button = new JButton("Remove");
-        remove_button.addActionListener(new ButtonHandler(this,Command.REMOVE));
+        remove_button.addActionListener(new ButtonHandler(this, Command.REMOVE));
 
         JButton search_button = new JButton("Search");
-        search_button.addActionListener(new ButtonHandler(this,Command.SEARCH));
+        search_button.addActionListener(new ButtonHandler(this, Command.SEARCH));
 
         JButton reset_button = new JButton("Reset");
-        reset_button.addActionListener(new ButtonHandler(this,Command.RESET));
+        reset_button.addActionListener(new ButtonHandler(this, Command.RESET));
 
         JButton exit_button = new JButton("Exit");
-        exit_button.addActionListener(new ButtonHandler(this,Command.EXIT));
+        exit_button.addActionListener(new ButtonHandler(this, Command.EXIT));
 
         //north panel(container/section) - contains title
         JPanel north = new JPanel();
         north.add(title);
         north.setBackground(background_color);
-        north.setPreferredSize(new Dimension(UI_WIDTH,NORTH_PANEL_HEIGHT));
+        north.setPreferredSize(new Dimension(UI_WIDTH, NORTH_PANEL_HEIGHT));
 
 
         //adding north section to frame/panel
-        add(north,BorderLayout.NORTH);
+        body.add(north, BorderLayout.NORTH);
 
         //center panel(container/section)- contains text-fields and corresponding button
         JPanel center = new JPanel();
@@ -125,9 +154,9 @@ public class UI extends JPanel {
         center_right.setLayout(center_right_layout);
 
         //setting sizes of center, center_left, and center_right
-        center.setPreferredSize(new Dimension(UI_WIDTH,CENTER_PANEL_HEIGHT));
-        center_left.setPreferredSize(new Dimension(110,CENTER_PANEL_HEIGHT));
-        center_right.setPreferredSize(new Dimension(400,CENTER_PANEL_HEIGHT));
+        center.setPreferredSize(new Dimension(UI_WIDTH, CENTER_PANEL_HEIGHT));
+        center_left.setPreferredSize(new Dimension(110, CENTER_PANEL_HEIGHT));
+        center_right.setPreferredSize(new Dimension(400, CENTER_PANEL_HEIGHT));
 
         //adding first row of components
         center_left.add(file_path);
@@ -151,14 +180,14 @@ public class UI extends JPanel {
         center.setBackground(background_color);
 
         //adding center_left and center_right to center  and center section to UI Panel
-        center.add(center_left,BorderLayout.WEST);
-        center.add(center_right,BorderLayout.EAST);
-        add(center,BorderLayout.CENTER);
+        center.add(center_left, BorderLayout.WEST);
+        center.add(center_right, BorderLayout.EAST);
+        body.add(center, BorderLayout.CENTER);
 
         //south panel(container/section)- will contain footer elements (i.e exit and clear button)
         JPanel south = new JPanel();
         south.setBackground(background_color);
-        south.setPreferredSize(new Dimension(UI_WIDTH,SOUTH_PANEL_HEIGHT));
+        south.setPreferredSize(new Dimension(UI_WIDTH, SOUTH_PANEL_HEIGHT));
 
         //west of south section - setting padding and adding component(reset button)
         JPanel south_left = new JPanel();
@@ -167,7 +196,7 @@ public class UI extends JPanel {
         south_left.setPreferredSize(new Dimension(UI_WIDTH / 3, SOUTH_PANEL_HEIGHT));
         south_left.setBackground(background_color);
         south_left.setLayout(new FlowLayout(FlowLayout.LEFT));
-        south_left.setBorder(new EmptyBorder(0,30,0,0));
+        south_left.setBorder(new EmptyBorder(0, 30, 0, 0));
 
         //center of south section - setting padding and adding components(status label)
         JPanel south_center = new JPanel();
@@ -183,34 +212,79 @@ public class UI extends JPanel {
         south_right.add(search_button);
         south_right.setBackground(background_color);
         south_right.setLayout(new FlowLayout(FlowLayout.RIGHT));
-        south_right.setBorder(new EmptyBorder(0,0,0,23));
+        south_right.setBorder(new EmptyBorder(0, 0, 0, 23));
 
         //adding south_left and south_right to south  and south section to UI Panel
-        south.add(south_left,BorderLayout.WEST);
+        south.add(south_left, BorderLayout.WEST);
         south.add(south_center, BorderLayout.CENTER);
-        south.add(south_right,BorderLayout.EAST);
+        south.add(south_right, BorderLayout.EAST);
         south.setLayout(no_padding_layout);
-        add(south,BorderLayout.SOUTH);
+        body.add(south, BorderLayout.SOUTH);
         //south.setBorder(BorderFactory.createLineBorder(Color.black));
+
     }
+
 
     @Override
-    public Dimension getPreferredSize() {
+    public Dimension getMaximumSize() {
         return new Dimension(UI_WIDTH,UI_HEIGHT);
     }
-
 
     class ButtonHandler implements ActionListener {     //handles what buttons do based on corresponding action
         UI panel;
         Command command;
+
         ButtonHandler(UI panel, Command command) {
             this.panel = panel;
             this.command = command;
         }
 
+        public void refreshFrame() {
+            Main2.frame.pack();
+            Main2.frame.setShape(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 20, 20)); //creates rounded edges for modern feel
+            Main2.frame.revalidate();
+            Main2.frame.repaint();
+        }
+
+        public void clearResults() {
+            result_panel.removeAll();
+            RESULT_PANEL_HEIGHT = 0;
+            result_panel.setPreferredSize(new Dimension(RESULT_PANEL_WIDTH, RESULT_PANEL_HEIGHT));
+            UI_HEIGHT = UI_BODY_HEIGHT + RESULT_PANEL_HEIGHT + 50;
+            System.out.println(UI_HEIGHT);
+            panel.setPreferredSize(new Dimension(UI_WIDTH, UI_HEIGHT));
+            panel.repaint();
+            Main2.frame.pack();
+            refreshFrame();
+
+        }
+
+        public void addNewResult(String[][] data, String[] headings) {
+            //TODO Calls static search method
+            if (dm != null) {
+                result_panel.removeAll();
+            }
+
+            int expansion_size = 20;
+            System.out.println(data.length);
+            if (data.length < 8) {
+                expansion_size = expansion_size * data.length + expansion_size;
+            }
+
+            RESULT_PANEL_HEIGHT = expansion_size;
+            UI_HEIGHT = UI_BODY_HEIGHT + RESULT_PANEL_HEIGHT + 50;
+            dm = new DefaultTableModel(data, headings);
+            result_table = new JTable(dm);
+            JScrollPane scrollPane = new JScrollPane(result_table);
+            scrollPane.setPreferredSize(new Dimension(RESULT_PANEL_WIDTH, RESULT_PANEL_HEIGHT));
+            result_panel.setPreferredSize(new Dimension(RESULT_PANEL_WIDTH, RESULT_PANEL_HEIGHT));
+            result_panel.add(scrollPane, BorderLayout.SOUTH);
+            panel.setPreferredSize(new Dimension(UI_WIDTH, UI_HEIGHT));
+            refreshFrame();
+        }
         @Override
         public void actionPerformed(ActionEvent e) {
-            switch (command){
+            switch (command) {
                 case EXIT:
                     System.exit(WindowConstants.DO_NOTHING_ON_CLOSE);
                     break;
@@ -233,6 +307,7 @@ public class UI extends JPanel {
                     add_file.setText("");
                     file_list.removeAllItems();
                     search_keyword.setText("");
+                    clearResults();
                     break;
                 case REMOVE:
                     String file = (String) file_list.getSelectedItem();
@@ -240,13 +315,18 @@ public class UI extends JPanel {
                     files_to_search.remove(file);
                     break;
                 case SEARCH:
-                    System.out.println(files_to_search.values().toString());
-                    //TODO Calls static search method
+
+
+                    String[] headings = new String[]{"File path", "Relevancy"};
+                    String[][] data = new String[][]{{"Test 1", "1"}, {"Test 1", "1"}, {"Test 1", "1"}, {"Test 1", "1"}};
+                    addNewResult(data, headings);
+
                     break;
 
             }
         }
     }
+
 
     class MouseHandler extends MouseAdapter {
 
