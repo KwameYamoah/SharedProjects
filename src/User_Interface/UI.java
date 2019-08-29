@@ -21,7 +21,9 @@ public class UI extends JPanel {
     private JLabel status_label;
     private JFileChooser fileChooser = null;
     //TODO second UI - tomorrow
-    public JFrame frame;
+    //TODO validation & status label
+    // Theme change maybe
+    private JFrame frame;
     private HashMap<String, File> files_to_search = new HashMap<>();
 
     public UI(JFrame frame) {
@@ -183,7 +185,6 @@ public class UI extends JPanel {
         south_right.setLayout(new FlowLayout(FlowLayout.RIGHT));
         south_right.setBorder(new EmptyBorder(0,0,0,23));
 
-
         //adding south_left and south_right to south  and south section to UI Panel
         south.add(south_left,BorderLayout.WEST);
         south.add(south_center, BorderLayout.CENTER);
@@ -192,8 +193,6 @@ public class UI extends JPanel {
         add(south,BorderLayout.SOUTH);
         //south.setBorder(BorderFactory.createLineBorder(Color.black));
     }
-
-
 
     @Override
     public Dimension getPreferredSize() {
@@ -241,6 +240,7 @@ public class UI extends JPanel {
                     files_to_search.remove(file);
                     break;
                 case SEARCH:
+                    System.out.println(files_to_search.values().toString());
                     //TODO Calls static search method
                     break;
 
@@ -256,14 +256,13 @@ public class UI extends JPanel {
         public void mouseMoved(MouseEvent e) {
             posX = e.getX();
             posY = e.getY();
-
         }
+
 
         @Override
         public void mouseDragged(MouseEvent e) {
             Rectangle rectangle = frame.getBounds();
             frame.setBounds(e.getXOnScreen() - posX, e.getYOnScreen() - posY, rectangle.width, rectangle.height);
-
         }
 
 
