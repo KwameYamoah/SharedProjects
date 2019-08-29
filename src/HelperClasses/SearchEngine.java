@@ -13,7 +13,7 @@ import java.util.HashMap;
  */
 public class SearchEngine {
     ArrayList<String> rootDirectories = new ArrayList();    //List of all root directories chosen by user
-//    ArrayList<File> fileList = new ArrayList();             //List of files to be read
+    ArrayList<File> fileList = new ArrayList();             //List of files to be read
     ArrayList<String> directoryList = new ArrayList();      //List of directories accessed
     String searchTerm = "";                                 //Search term for search engine
     HashMap<HashMap<String,String>,Float> results;          //HashMap containing [[File_Name, File_Path],Score]
@@ -98,14 +98,15 @@ public class SearchEngine {
      * @return
      */
     public ArrayList<String> getFilesFromDir(){
+        System.out.println("METHOD ACCESSED: SearchEngine.getFilesFromDir()");
         ArrayList<String> files = new ArrayList();
         File folder = new File(this.rootDir);
         File[] listOfFiles = folder.listFiles();
 
         for(int i=0;i<listOfFiles.length;i++){
             if (listOfFiles[i].isFile()) {
-                System.out.println("File " + listOfFiles[i].getName());
-                files.add(listOfFiles[i].getName());
+                System.out.println("File " + listOfFiles[i].getPath());
+                files.add(listOfFiles[i].getPath());
 
             }
         }

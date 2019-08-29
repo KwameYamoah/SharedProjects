@@ -1,10 +1,12 @@
 package Program;
 
+import HelperClasses.DataAnalyser;
 import HelperClasses.SearchEngine;
-import User_Interface.UI;
 
-import javax.swing.*;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class Main {
 
@@ -29,6 +31,7 @@ public class Main {
 //      Library:    Apache Lucene
 
 
+        System.out.println("START MAIN_");
         // Finds list of files in directory
         String folderName = "Lectures";
         File folder = new File(System.getProperty("user.dir")+"\\"+folderName);
@@ -38,17 +41,20 @@ public class Main {
 
         SearchEngine fileSearcher = new SearchEngine(dir,"java");
 //        fileSearcher.getAllDirectories();
-        fileSearcher.getFilesFromDir();
+        ArrayList<String> files = new ArrayList();
+        files = fileSearcher.getFilesFromDir();
 
-
-
+        try {
+            DataAnalyser.extractText(files.get(0));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
         //Need to use a DFS search to traverse directories and retrieve list of all relevant files to be read
 
 
-
-
+        System.out.println("END MAIN_");
 
     }
 }
