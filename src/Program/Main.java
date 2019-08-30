@@ -38,20 +38,21 @@ public class Main {
         String dir = System.getProperty("user.dir")+"\\"+folderName;
         File[] listOfFiles = folder.listFiles();
 
+        ArrayList<String> directories = new ArrayList();
+        directories.add(dir);
 
-        SearchEngine fileSearcher = new SearchEngine(dir,"java");
-//        fileSearcher.getAllDirectories();
-        ArrayList<String> files = new ArrayList();
-        files = fileSearcher.getFilesFromDir();
+        SearchEngine fileSearcher = new SearchEngine(directories,"java");
+        fileSearcher.getFilesFromRootDir();
 
+
+        /////TEST//////
         try {
-            DataAnalyser.extractText(files.get(0));
+            DataAnalyser.extractText(dir+"\\ML Lecture 1 Introduction.pdf");
         } catch (IOException e) {
             e.printStackTrace();
         }
+        /////////////
 
-
-        //Need to use a DFS search to traverse directories and retrieve list of all relevant files to be read
 
 
         System.out.println("END MAIN_");

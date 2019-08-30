@@ -4,9 +4,12 @@ package HelperClasses;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -23,14 +26,23 @@ import java.io.IOException;
  */
 public class DataAnalyser {
 
-    public static void extractText(String filename) throws IOException {
-        File file = new File(filename);
-
-        PDDocument doc = PDDocument.load(file);
-        String x = new PDFTextStripper().getText(doc);
-        System.out.println(x);
-
-        
-
+    public static String removeBulletPointFromString(String string) {
+        //Create an arrow bullet point string and remove it from content
+        char[] chars = {13,10,73};
+        String arrowBulletPoint = String.copyValueOf(chars);
+        return string.replace(arrowBulletPoint,"");
     }
+
+    public static String extractText(String filename) throws IOException {
+        //Loads file
+        File file = new File(filename);
+        PDDocument doc = PDDocument.load(file);
+        String content = new PDFTextStripper().getText(doc);
+
+        //Removes arrow bullet point as it converts to an I (#73 ascii)
+        content = removeBulletPointFromString(content);
+
+        return content;
+    }
+
 }
