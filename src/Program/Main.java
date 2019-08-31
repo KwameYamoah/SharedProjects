@@ -1,11 +1,8 @@
 package Program;
 
-import HelperClasses.DataAnalyser;
-import HelperClasses.SearchEngine;
+import HelperClasses.RootDirectory;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class Main {
@@ -41,21 +38,18 @@ public class Main {
         ArrayList<String> directories = new ArrayList();
         directories.add(dir);
 
-        SearchEngine fileSearcher = new SearchEngine(directories,"java");
-        fileSearcher.getFilesFromRootDir();
-        ArrayList<String> files = fileSearcher.getFileList();
-//        for (String file: files) {
-//            System.out.println(file);
-//        }
+        //New FileSearcher object
+        RootDirectory directory = new RootDirectory(directories);
+//        fileSearcher.getFilesFromRootDir();
+
+        //Get Files from given String directory path
+        ArrayList<String> files = directory.getFilesFromDir(dir);
+
+        //Get test file (first file) from directory
         String testFile = files.get(0);
 
-        /////TEST//////
-        try {
-            DataAnalyser.extractText(testFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        /////////////
+        System.out.println(testFile);
+
 
 
 
