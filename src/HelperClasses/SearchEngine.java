@@ -1,6 +1,8 @@
 package HelperClasses;
 
+import javax.xml.crypto.Data;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -53,6 +55,12 @@ public class SearchEngine {
         //TF-IDF
     }
 
+    public void doTasks() throws IOException {
+        String content;
+        for (String file: this.fileList) {
+            content = DataAnalyser.extractText(file);
+        }
+    }
 
     public void dataSetting(String content){
         //Identify unique vocab
@@ -100,7 +108,7 @@ public class SearchEngine {
 
          for(int i=0;i<listOfFiles.length;i++){
              if (listOfFiles[i].isDirectory()) {
-                 System.out.println("Directory " + listOfFiles[i].getPath());
+//                 System.out.println("Directory " + listOfFiles[i].getPath());
                  directories.add(listOfFiles[i].getPath());
              }
          }
@@ -117,6 +125,9 @@ public class SearchEngine {
         ArrayList<String> files = new ArrayList();
         //Retrieve all files from current folder
         files = getFilesFromDir(this.rootDirectories.get(0));
+        for (String file: files) {
+            this.fileList.add(file);
+        }
 
         //Root directory
         ArrayList<String> toVisit = new ArrayList(); //List of paths to visit
@@ -144,7 +155,7 @@ public class SearchEngine {
                     toVisit.add(path);
                 }
             }
-            toVisit.remove(0);
+            toVisit.remove(0);      //Remove visited directory
         }
 
     }
@@ -170,6 +181,14 @@ public class SearchEngine {
         }
 
         return files;
+    }
+
+    public ArrayList<String> getFileList(){
+        return this.fileList;
+    }
+
+    public ArrayList<String> getRootDirectories(){
+        return this.rootDirectories;
     }
 
     private boolean containsItems(File[] files){
@@ -221,6 +240,7 @@ public class SearchEngine {
     private void setSearchTerm(String searchTerm){
         this.searchTerm = searchTerm;
     }
+
 
 
 

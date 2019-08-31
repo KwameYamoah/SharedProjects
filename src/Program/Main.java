@@ -43,11 +43,15 @@ public class Main {
 
         SearchEngine fileSearcher = new SearchEngine(directories,"java");
         fileSearcher.getFilesFromRootDir();
-
+        ArrayList<String> files = fileSearcher.getFileList();
+//        for (String file: files) {
+//            System.out.println(file);
+//        }
+        String testFile = files.get(0);
 
         /////TEST//////
         try {
-            DataAnalyser.extractText(dir+"\\ML Lecture 1 Introduction.pdf");
+            DataAnalyser.extractText(testFile);
         } catch (IOException e) {
             e.printStackTrace();
         }
