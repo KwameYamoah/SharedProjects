@@ -55,6 +55,8 @@ public class Main {
          */
         String term = "information";
         SearchEngine searchEngine = new SearchEngine(term,directories);
+        searchEngine.search(false);
+
 
         System.out.println("END MAIN_");
 

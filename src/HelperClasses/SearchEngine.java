@@ -1,5 +1,6 @@
 package HelperClasses;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -9,7 +10,9 @@ import java.util.ArrayList;
 public class SearchEngine {
 
     private String searchTerm;
-    private ArrayList directories = new ArrayList();
+    private ArrayList<String> directories;
+    private ArrayList<String> files = new ArrayList<>();
+    private FileContent fileContent = new FileContent();
 
     public SearchEngine(String searchTerm, ArrayList<String> directories){
         this.searchTerm = searchTerm;
@@ -44,6 +47,8 @@ public class SearchEngine {
      */
     public void search(String newSearchTerm){
         setSearchTerm(newSearchTerm);
+        //If no boolean allSubDir given: assume only root directory (false)
+        setTypeAllFiles(false);
         search();
     }
 
@@ -52,6 +57,7 @@ public class SearchEngine {
      * @param allSubDir True if searching through all sub directories
      */
     public void search(boolean allSubDir){
+        setTypeAllFiles(allSubDir);
         search();
     }
 
@@ -62,6 +68,7 @@ public class SearchEngine {
      * @param allSubDir True if searching through all sub directories
      */
     public void search(String newSearchTerm, boolean allSubDir){
+        setTypeAllFiles(allSubDir);
         setSearchTerm(newSearchTerm);
         search();
     }
@@ -69,8 +76,9 @@ public class SearchEngine {
     /**
      * Searches files using the search term
      */
-    public void search(){
+    private void search(){
         System.out.println("Searching for: "+this.searchTerm);
+        System.out.println(this.directories);
         //TF-IDF
 
     }
@@ -79,13 +87,50 @@ public class SearchEngine {
      * Method to retrieve all files given the search criteria in parameter
      * @param allSubDir True if searching through all sub directories
      */
-    public void getFiles(boolean allSubDir){
+    public void setTypeAllFiles(boolean allSubDir){
+        RootDirectory directory = new RootDirectory(this.directories);
+        //If more than 1 root directory
+        //Else if only 1 root directory
+        //Else if empty ArrayList
+
+        //TODO
+        //  Get filepaths/ single filepath
+        //  Check if files exist
+
         if(allSubDir){
             //get all files from every sub directory starting at root
+            directory.addToFilesFromRootDir();
+            if(directory.getAllFiles().size()>1){
+                System.out.println("More than 1 file in directory");
+                setFiles(directory.getAllFiles());
+            }
+            else if(directory.getAllFiles().size()==1){
+                System.out.println("Only 1 file in directory");
+            }
+            else if(directory.getAllFiles().isEmpty()){
+                System.out.println("No files detected in directory");
+            }
+            else{
+                System.out.println("ELSSEE");
+            }
         }
         else{
             //just get all files in root directory
+            directory.addToFileFromJustRootDir();
+            if(directory.getAllFiles().size()>1){
+                System.out.println("More than 1 file in directory");
+            }
+            else if(directory.getAllFiles().size()==1){
+                System.out.println("Only 1 file in directory");
+            }
+            else if(directory.getAllFiles().isEmpty()){
+                System.out.println("No files detected in directory");
+            }
+            else{
+                System.out.println("ELSSEE");
+            }
         }
+        setFiles(directory.getAllFiles());
     }
 
 
@@ -95,5 +140,9 @@ public class SearchEngine {
      */
     private void setSearchTerm(String searchTerm){
         this.searchTerm = searchTerm;
+    }
+
+    public void setFiles(ArrayList<String> files) {
+        this.files = files;
     }
 }

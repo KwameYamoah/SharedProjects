@@ -31,6 +31,7 @@ public class RootDirectory {
     }
 
     public RootDirectory(ArrayList<String> rootDirectories){
+        this.name = rootDirectories.get(0);
         this.rootDirectories = new ArrayList<>();
         addToRootDirectories(rootDirectories);
         this.singleDirectory = false;
@@ -81,6 +82,22 @@ public class RootDirectory {
         return false;
     }
 
+    /**
+     *  Adds every single file from just this root directory
+     */
+    public void addToFileFromJustRootDir(){
+        File[] listOfFiles = new File(this.name).listFiles();
+
+        if(listOfFiles.length > 0){
+            for (File file: listOfFiles) {
+                if(file.isFile()){
+                    addToFiles(file.getPath());
+                    addToAllFiles(file.getPath());
+                }
+            }
+        }
+    }
+
 
     /** addFilesFromRootDir:
      * Adds every single file under this root directory to file
@@ -108,17 +125,21 @@ public class RootDirectory {
             //Check if toVisit directory is empty of files
             if(containsFiles(currentDir)){
                 for (String file: getFilesFromDir(currentDir)) {
-                    addToAllFiles(file);
+                    //If not in this.allFiles: then add
+                    if(!isInAllFiles(file)){
+                        addToAllFiles(file);
+                    }
+
                 }
             }
             //Check if toVisit directory is empty of sub-directories
             if(containsDirectories(currentDir)){
                 for (String path: getAllDirectories(currentDir)){
-                    // TODO
-                    //  Need to check whether directory 'path' already exists in this.allChildren
-                    //  Inefficient if duplicate filepaths
-                    addToAllChildren(path);
-                    toVisit.add(path);
+                    //If not in this.allChildren: then add
+                    if(!isInAllChildren(path)){
+                        addToAllChildren(path);
+                        toVisit.add(path);
+                    }
                 }
             }
             toVisit.remove(0);      //Remove visited directory
@@ -128,7 +149,7 @@ public class RootDirectory {
 
 
     /** getFilesFromDir
-     * Get all files from given directory
+     * Get all files from given single String directory
      *
      * @return ArrayList of files
      */
@@ -163,6 +184,23 @@ public class RootDirectory {
             }
         }
     }
+
+    /**
+     * Returns True if directory path already in this.allChildren
+     * @return Boolean
+     */
+    private boolean isInAllChildren(String dir){
+        return this.allChildren.contains(dir);
+    }
+
+    /**
+     * Returns True if file path already in this.allFiles
+     * @return Boolean
+     */
+    private boolean isInAllFiles(String dir){
+        return this.allFiles.contains(dir);
+    }
+
 
 
     /**
