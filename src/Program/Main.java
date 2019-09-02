@@ -1,27 +1,17 @@
 package Program;
 
+import HelperClasses.FileContent;
 import HelperClasses.RootDirectory;
+import HelperClasses.SearchEngine;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Main {
 
-    public static void main(String[] args) {
-//TODO   1. Read pdf files
-//       2. Convert pdf to text
-//       3. Tokenise text content into individual words
-//       4. Get required data from file
-//       5. Output data to txt file as json format
-//              Individual output: [DocumentID, DocumentLength, Postings(frequency), Vocabulary]
-//       6. Open each document and apply search_term
-//       7. UI to print out results
-//          7. Table of results: Contains link - When clicked, opens directory of where file is at.
-//        .
-//        .
-//      ### Need to discuss whether should search file immediately or save postings to file and then read postings. ###
-//        .
-//        .
+    public static void main(String[] args) throws IOException {
+//TODO
 //      Possible implementation idea: Will stop search if found 15 results passed score threshold
 //      .
 //      More help:  https://codereview.stackexchange.com/questions/28490/searching-word-or-phrase-among-files
@@ -35,23 +25,36 @@ public class Main {
         String dir = System.getProperty("user.dir")+"\\"+folderName;
         File[] listOfFiles = folder.listFiles();
 
-        ArrayList<String> directories = new ArrayList();
+        ArrayList<String> directories = new ArrayList<>();
         directories.add(dir);
 
-        //New FileSearcher object
-        RootDirectory directory = new RootDirectory(directories);
-//        fileSearcher.getFilesFromRootDir();
+//        /**
+//         *  New RootDirectory object
+//         */
+//        RootDirectory directory = new RootDirectory(directories);
+////        //Get all files from root directory to sub-levels
+////        fileSearcher.getFilesFromRootDir();
+//        //Get Files from given String directory path
+//        directory.addToFilesFromDirectory(dir);
+//
+//        //Get test file (first file) from directory
+//        String testFile = directory.getFiles().get(0);
+//        System.out.println(testFile);
+//
+//        /**
+//         * New FileContent object
+//         */
+//        FileContent files = new FileContent();
+//        //For each file, extract content from pdf
+//        for (String filename: directory.getFiles()) {
+//            files.addNewFileData(filename);
+//        }
 
-        //Get Files from given String directory path
-        ArrayList<String> files = directory.getFilesFromDir(dir);
-
-        //Get test file (first file) from directory
-        String testFile = files.get(0);
-
-        System.out.println(testFile);
-
-
-
+        /**
+         * New SearchEngine Object
+         */
+        String term = "information";
+        SearchEngine searchEngine = new SearchEngine(term,directories);
 
         System.out.println("END MAIN_");
 

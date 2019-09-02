@@ -2,7 +2,6 @@ package HelperClasses;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 
 //Finds all files to be read
@@ -11,70 +10,59 @@ import java.util.HashMap;
  *      Returns the results
  */
 public class RootDirectory {
-    String name;
-    ArrayList<String> files = new ArrayList();           //List of files to be read
-    ArrayList<String> children = new ArrayList();      //List of directories accessed
+    private String name;
+    private ArrayList<String> files = new ArrayList<>();          //List of files to be read
+    private ArrayList<String> children = new ArrayList<>();       //List of directories accessed
 
-    ArrayList<String> rootDirectories;    //List of all root directories chosen by user
-    ArrayList<String> allFiles = new ArrayList();           //List of files to be read
-    ArrayList<String> allChildren = new ArrayList();      //List of directories accessed
+    private ArrayList<String> rootDirectories;                  //List of all root directories chosen by user
+    private ArrayList<String> allFiles = new ArrayList<>();       //List of files to be read
+    private ArrayList<String> allChildren = new ArrayList<>();    //List of directories accessed
 
-    boolean singleDirectory;
-
-    HashMap<HashMap<String,String>,Float> results;          //HashMap containing [[File_Name, File_Path],Score]
+    private boolean singleDirectory;
 
 
-
-
-
-
-    //Constructor
+    /** CONSTRUCTOR
+     *
+     * @param dir String of directory filepath
+     */
     public RootDirectory(String dir){
         this.name = dir;
         this.singleDirectory = true;
     }
 
     public RootDirectory(ArrayList<String> rootDirectories){
-        this.rootDirectories = new ArrayList();
+        this.rootDirectories = new ArrayList<>();
         addToRootDirectories(rootDirectories);
         this.singleDirectory = false;
     }
 
-
-
-
 //    public void doTasks() throws IOException {
+//        System.out.println(this.files.size());
 //        //For each file, extract content from pdf
-//        String content;
-//        for (String file: this.fileList) {
-//            content = FileAnalyser.extractText(file);
-//            dataSetting(content);
+//        FileContent files = new FileContent();
+//        for (String filename: this.files) {
+//            files.addNewFileData(filename);
+//
 //        }
 //    }
 
 
-
-
-
-
-
-
     /** getAllDirectories: Get all directories within current directory (same level)
      *
-     * @return
+     * @return ArrayList of String containing file paths of directories
      */
-    public ArrayList<String> getAllDirectories(String dir){
+    private ArrayList<String> getAllDirectories(String dir){
         System.out.println("METHOD ACCESSED: SearchEngine.getAllDirectories()");
-         ArrayList<String> directories = new ArrayList();
+         ArrayList<String> directories = new ArrayList<>();
          File folder = new File(dir);
          File[] listOfFiles = folder.listFiles();
 
-         for(int i=0;i<listOfFiles.length;i++){
-             if (listOfFiles[i].isDirectory()) {
+        for (File file : listOfFiles) {
+            if (file.isDirectory()) {
 //                 System.out.println("Directory " + listOfFiles[i].getPath());
-                 directories.add(listOfFiles[i].getPath());
-             }
-         }
+                directories.add(file.getPath());
+            }
+        }
          return directories;
     }
 
@@ -86,7 +74,7 @@ public class RootDirectory {
     public boolean addFilesFromDir(String dir){
         if(containsFiles(dir)){
             for (String file: getFilesFromDir(dir)) {
-                this.files.add(file);
+                addToFiles(file);
             }
             return true;
         }
@@ -97,39 +85,39 @@ public class RootDirectory {
     /** addFilesFromRootDir:
      * Adds every single file under this root directory to file
      *
-     * @return
      */
-    public void addFilesFromRootDir(){
-        ArrayList<String> files = new ArrayList();
+    public void addToFilesFromRootDir(){
         //Retrieve all files from current folder
-        files = getFilesFromDir(this.name);
+        ArrayList<String> files = getFilesFromDir(this.name);
         for (String file: files) {
-            this.files.add(file);
+            addToFiles(file);
+            addToAllFiles(file);
         }
 
         //Root directory
-        ArrayList<String> toVisit = new ArrayList(); //List of paths to visit
+        ArrayList<String> toVisit = new ArrayList<>(); //List of paths to visit
 
         for (String path: getAllDirectories(this.name)) {
-            this.children.add(path);
+            addToChildren(path);
             toVisit.add(path);
         }
 
         String currentDir;
         while(toVisit.size()>0){
-            System.out.println(toVisit.size());
             currentDir = toVisit.get(0);
-            System.out.println(currentDir);
             //Check if toVisit directory is empty of files
             if(containsFiles(currentDir)){
                 for (String file: getFilesFromDir(currentDir)) {
-                    this.files.add(file);
+                    addToAllFiles(file);
                 }
             }
             //Check if toVisit directory is empty of sub-directories
             if(containsDirectories(currentDir)){
                 for (String path: getAllDirectories(currentDir)){
-                    this.children.add(path);
+                    // TODO
+                    //  Need to check whether directory 'path' already exists in this.allChildren
+                    //  Inefficient if duplicate filepaths
+                    addToAllChildren(path);
                     toVisit.add(path);
                 }
             }
@@ -142,11 +130,11 @@ public class RootDirectory {
     /** getFilesFromDir
      * Get all files from given directory
      *
-     * @return
+     * @return ArrayList of files
      */
-    public ArrayList<String> getFilesFromDir(String dir){
+    private ArrayList<String> getFilesFromDir(String dir){
         System.out.println("METHOD ACCESSED: SearchEngine.getFilesFromDir()");
-        ArrayList<String> files = new ArrayList();
+        ArrayList<String> files = new ArrayList<>();
         File[] listOfFiles = new File(dir).listFiles();
 
         if(listOfFiles.length > 0){
@@ -157,25 +145,56 @@ public class RootDirectory {
                 }
             }
         }
-
         return files;
     }
 
-    public ArrayList<String> getFiles(){
-        return this.files;
-    }
+    /**
+     *  Add all files from given directory to this.files
+     * @param dir String
+     */
+    public void addToFilesFromDirectory(String dir){
+        File[] listOfFiles = new File(dir).listFiles();
 
-    public ArrayList<String> getAllFilesFiles(){ return this.allFiles; }
-
-    public ArrayList<String> getRootDirectories() {return this.rootDirectories; }
-
-    private boolean containsItems(File[] files){
-        if(files.length==0){
-            return false;
+        if(listOfFiles.length > 0){
+            for (File path: listOfFiles) {
+                if(path.isFile()){
+                    this.files.add(path.getPath());
+                }
+            }
         }
-        return true;
     }
 
+
+    /**
+     * Returns all file paths saved in directory
+     * @return this.files
+     */
+    public ArrayList<String> getFiles(){ return this.files;}
+
+    /**
+     * Returns all file paths saved in directory and sub directories
+     * @return this.allFiles
+     */
+    public ArrayList<String> getAllFiles(){ return this.allFiles; }
+
+    /**
+     * Returns list of saved directories passed in to search in
+     * @return this.rootDirectories
+     */
+    public ArrayList<String> getRootDirectories() { return this.rootDirectories; }
+
+    /**
+     * Returns True if contains item; False if empty
+     * @param files List of files
+     * @return boolean
+     */
+    private boolean containsItems(File[] files){ return files.length != 0; }
+
+    /**
+     * Return True if directory contains a file-type
+     * @param dir String directory filepath
+     * @return boolean
+     */
     private boolean containsFiles(String dir){
         File[] listOfFiles = new File(dir).listFiles();
         if(containsItems(listOfFiles)){
@@ -188,6 +207,11 @@ public class RootDirectory {
         return false;
     }
 
+    /**
+     * Returns True if directory contains a Directory-type
+     * @param dir String directory filepath
+     * @return boolean
+     */
     private boolean containsDirectories(String dir){
         File[] listOfFiles = new File(dir).listFiles();
         if(containsItems(listOfFiles)){
@@ -200,21 +224,41 @@ public class RootDirectory {
         return false;
     }
 
-
+    /**
+     * Adds all objects from given ArrayList to rootDirectory
+     * @param rootDirectories ArrayList
+     */
     private void addToRootDirectories(ArrayList<String> rootDirectories){
-        for (String dir: rootDirectories) {
-            this.rootDirectories.add(dir);
-        }
+        this.rootDirectories.addAll(rootDirectories);
     }
 
-    private void addToChildren(String dir){
-        this.children.add(dir);
-    }
+    /**
+     * Adds a filepath to this.files
+     * @param dir String directory filepath
+     */
+    private void addToFiles(String dir) {this.files.add(dir);}
 
-    private void addToAllChildren(String dir){
-        this.allChildren.add(dir);
-    }
+    /**
+     * Adds a filepath to this.allFiles
+     * @param dir String directory filepath
+     */
+    private void addToAllFiles(String dir) {this.allFiles.add(dir);}
 
+    /**
+     * Adds a filepath to this.children
+     * @param dir String directory filepath
+     */
+    private void addToChildren(String dir){this.children.add(dir);}
+
+    /**
+     * Adds a filepath to this.allChildren
+     * @param dir String directory filepath
+     */
+    private void addToAllChildren(String dir){this.allChildren.add(dir);}
+
+    /**
+     * Clears this.files of any items
+     */
     public void resetFiles(){ this.files.clear(); }
 
 
