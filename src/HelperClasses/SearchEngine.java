@@ -1,6 +1,7 @@
 package HelperClasses;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -12,53 +13,33 @@ public class SearchEngine {
     private String searchTerm;
     private ArrayList<String> directories;
     private ArrayList<String> files = new ArrayList<>();
-    private FileContent fileContent = new FileContent();
 
     public SearchEngine(String searchTerm, ArrayList<String> directories){
         this.searchTerm = searchTerm;
         this.directories = directories;
     }
 
-    /**
-     * SearchEngine to create a RootDirectory class with 'directories'
-     * SearchEngine to create a FileContent class to access content of files
-     *
-     * Apply search to fields of FileContent object.
-     */
-
-    //different: {0=1}, {1=3}
-    //different: 0=1, 1=3
-    //different:   0, 1 ,1,3
-    //different, 0,1,1,3,
-    //[different, 0,1,1,3]
-    //Arraylist<Integer,Integer> test = new Arraylist<>();
-    //loop start 1 till end
-    //0 1
-    //1 3
-    //test.add(0,1);
-    //test.add(1,3)
-    //results.put("different", test);
-
-
 
     /**
      * Sets a new search term before searching files using new search term
      * @param newSearchTerm Set a new String search term before searching
      */
-    public void search(String newSearchTerm){
+    public ArrayList<String> search(String newSearchTerm) throws IOException {
         setSearchTerm(newSearchTerm);
         //If no boolean allSubDir given: assume only root directory (false)
         setTypeAllFiles(false);
-        search();
+        ArrayList<String> results = new ArrayList<>(search());
+        return results;
     }
 
     /**
      * Sets a new search term before searching files using new search term
      * @param allSubDir True if searching through all sub directories
      */
-    public void search(boolean allSubDir){
+    public ArrayList<String> search(boolean allSubDir) throws IOException {
         setTypeAllFiles(allSubDir);
-        search();
+        ArrayList<String> results = new ArrayList<>(search());
+        return results;
     }
 
     /**
@@ -67,47 +48,55 @@ public class SearchEngine {
      * @param newSearchTerm Set a new String search term before searching
      * @param allSubDir True if searching through all sub directories
      */
-    public void search(String newSearchTerm, boolean allSubDir){
+    public ArrayList<String> search(String newSearchTerm, boolean allSubDir) throws IOException {
         setTypeAllFiles(allSubDir);
         setSearchTerm(newSearchTerm);
-        search();
+        ArrayList<String> results = new ArrayList<>(search());
+        return results;
     }
 
     /**
      * Searches files using the search term
      */
-    private void search(){
+    private ArrayList<String> search() throws IOException {
         System.out.println("Searching for: "+this.searchTerm);
-        System.out.println(this.directories);
+//        System.out.println(this.directories);
         //TF-IDF
 
+        //Create new fileContents for each document extracted
+        FileContent fileContent = new FileContent();
+        for (String file: this.files) {
+            fileContent.addNewFileData(file);
+//            System.out.println(fileContent.getDocsID());
+        }
+
+        //Loop through every term and calculate IDF of each term in corpus
+        fileContent.calculateAllIDF();
+
+        //Return results which contain
+        ArrayList<String> results = new ArrayList<>(fileContent.searchTerm(this.searchTerm));
+        return results;
     }
 
     /**
      * Method to retrieve all files given the search criteria in parameter
      * @param allSubDir True if searching through all sub directories
      */
-    public void setTypeAllFiles(boolean allSubDir){
+    private void setTypeAllFiles(boolean allSubDir){
         RootDirectory directory = new RootDirectory(this.directories);
-        //If more than 1 root directory
-        //Else if only 1 root directory
-        //Else if empty ArrayList
 
-        //TODO
-        //  Get filepaths/ single filepath
-        //  Check if files exist
-
+        //If to check every single sub directory
         if(allSubDir){
             //get all files from every sub directory starting at root
             directory.addToFilesFromRootDir();
-            if(directory.getAllFiles().size()>1){
+            //Check if file list if empty
+            if(directory.getAllPDFFiles().size()>1){
                 System.out.println("More than 1 file in directory");
-                setFiles(directory.getAllFiles());
             }
-            else if(directory.getAllFiles().size()==1){
+            else if(directory.getAllPDFFiles().size()==1){
                 System.out.println("Only 1 file in directory");
             }
-            else if(directory.getAllFiles().isEmpty()){
+            else if(directory.getAllPDFFiles().isEmpty()){
                 System.out.println("No files detected in directory");
             }
             else{
@@ -117,20 +106,20 @@ public class SearchEngine {
         else{
             //just get all files in root directory
             directory.addToFileFromJustRootDir();
-            if(directory.getAllFiles().size()>1){
+            if(directory.getAllPDFFiles().size()>1){
                 System.out.println("More than 1 file in directory");
             }
-            else if(directory.getAllFiles().size()==1){
+            else if(directory.getAllPDFFiles().size()==1){
                 System.out.println("Only 1 file in directory");
             }
-            else if(directory.getAllFiles().isEmpty()){
+            else if(directory.getAllPDFFiles().isEmpty()){
                 System.out.println("No files detected in directory");
             }
             else{
                 System.out.println("ELSSEE");
             }
         }
-        setFiles(directory.getAllFiles());
+        setFiles(directory.getAllPDFFiles());
     }
 
 
@@ -142,7 +131,7 @@ public class SearchEngine {
         this.searchTerm = searchTerm;
     }
 
-    public void setFiles(ArrayList<String> files) {
+    private void setFiles(ArrayList<String> files) {
         this.files = files;
     }
 }

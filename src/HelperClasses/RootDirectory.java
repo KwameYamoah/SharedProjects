@@ -37,23 +37,12 @@ public class RootDirectory {
         this.singleDirectory = false;
     }
 
-//    public void doTasks() throws IOException {
-//        System.out.println(this.files.size());
-//        //For each file, extract content from pdf
-//        FileContent files = new FileContent();
-//        for (String filename: this.files) {
-//            files.addNewFileData(filename);
-//
-//        }
-//    }
-
 
     /** getAllDirectories: Get all directories within current directory (same level)
      *
      * @return ArrayList of String containing file paths of directories
      */
     private ArrayList<String> getAllDirectories(String dir){
-        System.out.println("METHOD ACCESSED: SearchEngine.getAllDirectories()");
          ArrayList<String> directories = new ArrayList<>();
          File folder = new File(dir);
          File[] listOfFiles = folder.listFiles();
@@ -154,14 +143,12 @@ public class RootDirectory {
      * @return ArrayList of files
      */
     private ArrayList<String> getFilesFromDir(String dir){
-        System.out.println("METHOD ACCESSED: SearchEngine.getFilesFromDir()");
         ArrayList<String> files = new ArrayList<>();
         File[] listOfFiles = new File(dir).listFiles();
 
         if(listOfFiles.length > 0){
             for (File path: listOfFiles) {
                 if(path.isFile()){
-                    System.out.println("File: " + path.getPath());
                     files.add(path.getPath());
                 }
             }
@@ -183,6 +170,14 @@ public class RootDirectory {
                 }
             }
         }
+    }
+
+    private String getFileType(String filename){
+        int lastIndex = filename.lastIndexOf(".");
+        if(lastIndex == -1){
+            return "";
+        }
+        return filename.substring(lastIndex);
     }
 
     /**
@@ -214,6 +209,16 @@ public class RootDirectory {
      * @return this.allFiles
      */
     public ArrayList<String> getAllFiles(){ return this.allFiles; }
+
+    public ArrayList<String> getAllPDFFiles(){
+        ArrayList<String> arr = new ArrayList<>();
+        for (String file: this.allFiles) {
+            if(getFileType(file).equals(".pdf")){
+                arr.add(file);
+            }
+        }
+        return arr;
+    }
 
     /**
      * Returns list of saved directories passed in to search in
@@ -300,5 +305,7 @@ public class RootDirectory {
     public void resetFiles(){ this.files.clear(); }
 
 
-
+    public void setName(String name) {
+        this.name = name;
+    }
 }
