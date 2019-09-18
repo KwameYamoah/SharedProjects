@@ -14,7 +14,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -250,6 +249,9 @@ public class UI extends JPanel {
         }
 
         public void clearResults() {
+            add_file.setText("");
+            file_list.removeAllItems();
+            search_keyword.setText("");
             result_panel.removeAll();
             RESULT_PANEL_HEIGHT = 0;
             result_panel.setPreferredSize(new Dimension(RESULT_PANEL_WIDTH, RESULT_PANEL_HEIGHT));
@@ -307,9 +309,7 @@ public class UI extends JPanel {
                     }
                     break;
                 case RESET:
-                    add_file.setText("");
-                    file_list.removeAllItems();
-                    search_keyword.setText("");
+
                     clearResults();
                     break;
                 case REMOVE:
@@ -320,9 +320,7 @@ public class UI extends JPanel {
                 case SEARCH:
 
 
-                    String[] headings = new String[]{"File path", "Relevancy"};
-                    String[][] data = new String[][]{{"Test 1", "1"}, {"Test 1", "1"}, {"Test 1", "1"}, {"Test 1", "1"}};
-                    addNewResult(data, headings);
+
 
                     /**
                      * New SearchEngine Object
@@ -332,16 +330,36 @@ public class UI extends JPanel {
                         file_directories.add(files.getAbsolutePath());
                     }
                     System.out.println(file_directories.toString());
+
                     SearchEngine searchEngine = new SearchEngine(search_keyword.getText(), file_directories); //directories is an array of all folders
+
+                    //TODO return as a hashmap with File as key and score as value
                     ArrayList<String> results = null;  //true if searching every single sub folder; false if just this folder
                     try {
-                        results = new ArrayList<>(searchEngine.search(true));
-                    } catch (IOException e1) {
-                        status_label.setText("Error");
+                        results = new ArrayList<>(searchEngine.search(true)); //TODO this is the boolean for checkbox
+                        System.out.println("Results");
+                        System.out.println(results);    //Results are ordered with highest score first
+                        String[] headings = new String[]{"File path", "Relevancy"};
+                        String[][] data = new String[results.size()][2];
+                        for (int i = 0; i < results.size(); i++) {
+
+                            File f = new File(results.get(i));
+                            data[i][0] = f.getName();
+                            data[i][1] = (i + 1) + "";
+                        }
+                        addNewResult(data, headings);
+                    } catch (Exception e1) {
+                        clearResults();
+                        status_label.setText("No results found");
                         status_label.setForeground(Color.RED);
                     }
-                    System.out.println("Results");
-                    System.out.println(results);    //Results are ordered with highest score first
+
+                    //TODO validate search(punctuations and case sensitivity)
+                    //  multiple search
+                    // get score , hash-map with file object and score
+
+                    //TODO checkbox for checking to search selected directory inc/exc subdirectories
+                    //  threads to prevent gui from hanging
                     break;
 
             }
