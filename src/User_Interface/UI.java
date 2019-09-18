@@ -1,6 +1,7 @@
 package User_Interface;
 
 import HelperClasses.Command;
+import HelperClasses.SearchEngine;
 import Program.Main2;
 
 import javax.swing.*;
@@ -13,6 +14,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static HelperClasses.Constants.*;
@@ -43,7 +46,7 @@ public class UI extends JPanel {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             fileChooser = new JFileChooser();
-            fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             UIManager.setLookAndFeel(previousLF);
         } catch (IllegalAccessException | UnsupportedLookAndFeelException | InstantiationException | ClassNotFoundException ignored) {
         }
@@ -321,6 +324,24 @@ public class UI extends JPanel {
                     String[][] data = new String[][]{{"Test 1", "1"}, {"Test 1", "1"}, {"Test 1", "1"}, {"Test 1", "1"}};
                     addNewResult(data, headings);
 
+                    /**
+                     * New SearchEngine Object
+                     */
+                    ArrayList<String> file_directories = new ArrayList<>();
+                    for (File files : files_to_search.values()) {
+                        file_directories.add(files.getAbsolutePath());
+                    }
+                    System.out.println(file_directories.toString());
+                    SearchEngine searchEngine = new SearchEngine(search_keyword.getText(), file_directories); //directories is an array of all folders
+                    ArrayList<String> results = null;  //true if searching every single sub folder; false if just this folder
+                    try {
+                        results = new ArrayList<>(searchEngine.search(true));
+                    } catch (IOException e1) {
+                        status_label.setText("Error");
+                        status_label.setForeground(Color.RED);
+                    }
+                    System.out.println("Results");
+                    System.out.println(results);    //Results are ordered with highest score first
                     break;
 
             }
@@ -329,9 +350,7 @@ public class UI extends JPanel {
 
 
     class MouseHandler extends MouseAdapter {
-
         private int posX, posY;
-
         @Override
         public void mouseMoved(MouseEvent e) {
             posX = e.getX();
